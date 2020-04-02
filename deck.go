@@ -9,10 +9,11 @@ import (
 )
 
 // Extend 'slice of string' as new type called 'deck'
-type deck []string
+type deck []card
 
 // create will generate a full 52-card deck
 func create() deck {
+
 	cards := deck{}
 
 	suits := []string{"♦️", "♥️", "♠️️", "♣️"}
@@ -20,7 +21,7 @@ func create() deck {
 
 	for _, suit := range suits {
 		for _, value := range values {
-			cards = append(cards, value+" of "+suit)
+			cards = append(cards, card{value: value, suit: suit})
 		}
 	}
 
@@ -30,13 +31,17 @@ func create() deck {
 // print will log the current contents to stdout
 func (d deck) print() { // known as a "receiver" on a function, similar to "this"/"self" in other languages. "d" is a reference (not a copy)
 	for i, card := range d {
-		fmt.Println(i, card)
+		fmt.Println(i, card.toString())
 	}
 }
 
 // toString will return a string representation of the current deck, each string separated by a comma (,)
 func (d deck) toString() string {
-	return strings.Join(d, ",")
+	var x []string
+	for _, card := range d {
+		x = append(x, card.toString())
+	}
+	return strings.Join(x, ",")
 }
 
 // serialize will save the current deck to disk given the fileName
@@ -56,7 +61,13 @@ func deserialize(fileName string) (deck, error) {
 		fmt.Println("error: ", err)
 		return nil, err
 	}
-	return strings.Split(string(bytes), ","), nil
+
+	var q []card
+	for _, s := range strings.Split(string(bytes), ",") {
+		i := strings.Split(s, " ")
+		q = append(q, card{value: i[0], suit: i[2]})
+	}
+	return q, nil
 }
 
 // shuffle will rearrange the ordering of the deck. Performs side effects on the current deck object

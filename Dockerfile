@@ -5,4 +5,4 @@ COPY . .
 
 RUN go test
 
-CMD ["go", "run", "./main.go", "./deck.go"]
+CMD ["go", "run", "./main.go", "./deck.go", "./card.go"]
